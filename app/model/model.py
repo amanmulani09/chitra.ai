@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from typing import Dict,Any,List
 
-
 class VideoData(BaseModel):
     image_base64:str
     audio_transcription:str
@@ -22,7 +21,6 @@ class AnalysisResult(BaseModel):
     recommendations: List[str]
     summary: str
     confidence_score: float
-
 
 class AnalysisReport(BaseModel):
     session_id: str

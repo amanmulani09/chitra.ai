@@ -2,13 +2,11 @@ from fastapi import FastAPI, Request, WebSocket,HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import json 
-import base64
 import os 
 
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from datetime import datetime
-import tempfile
 from dotenv import load_dotenv, find_dotenv
 import openai
 import logging
