@@ -1,5 +1,9 @@
+import uvicorn
+
+
 def main():
-    print("Hello from chitra-ai!")
+    """Run the FastAPI app with uvicorn."""
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
 
 
 if __name__ == "__main__":

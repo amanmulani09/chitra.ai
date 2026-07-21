@@ -1,6 +1,10 @@
 import base64
+import os
 import tempfile
-from app.model.model import CapturedData
+
+from app.config import OPENAI_API_KEY, logger, openai_client
+from app.models.schemas import CapturedData
+
 class DataCaptureAgent:
     """
     Data Capture Agent is responsible for receiving video frames and audio,
