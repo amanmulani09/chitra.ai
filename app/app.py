@@ -4,7 +4,6 @@ from fastapi.templating import Jinja2Templates
 import json 
 import base64
 import os 
-from typing import Dict,Any,List
 
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
