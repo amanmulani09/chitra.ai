@@ -1,5 +1,6 @@
 # Agent 2: Analysis and Priority Assessment Agent
 import json
+from app.models.schemas import CapturedData, AnalysisResult
 class AnalysisAgent:
     def __init__(self):
         self.name = "AnalysisAgent"
@@ -101,3 +102,25 @@ class AnalysisAgent:
         except Exception as e:
             logger.error(f"Analysis error: {str(e)}")
             raise ValueError(f"Analysis failed: {str(e)}")
+        
+    async def analyze_and_prioritize(self, captured_data: CapturedData) -> AnalysisResult:
+        """Main analysis and prioritization function"""
+        logger.info("Starting health analysis and prioritization")
+        # Perform OpenAI analysis
+        analysis_data = await self.analyze_with_openai(
+            captured_data.image_data,
+            captured_data.audio_transcription
+        )
+        # Create analysis result
+        analysis_result = AnalysisResult(
+            visual_findings=analysis_data.get("visual_findings", {}),
+            audio_analysis=analysis_data.get("audio_analysis", {}),
+            assessment=analysis_data.get("assessment", "moderate"),
+            priority_level=analysis_data.get("priority_level", "medium"),
+            score=analysis_data.get("score", 5),
+            recommendations=analysis_data.get("recommendations", []),
+            summary=analysis_data.get("summary", "Analysis completed"),
+            confidence_score=analysis_data.get("confidence_score", 0.8)
+        )
+        logger.info(f"Analysis completed - Priority: {analysis_result.priority_level}, Score: {analysis_result.score}")
+        return analysis_result
