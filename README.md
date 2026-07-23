@@ -17,3 +17,9 @@ The app runs at http://localhost:8000 (`/health` for a status check, `/docs` for
 ```bash
 docker compose up --build
 ```
+
+## Architecture
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the full system design — application
+layers, the multi-agent pipeline, containerization, CI/CD, and deployment across
+UAT and Prod.
