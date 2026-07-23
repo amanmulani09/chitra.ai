@@ -13,7 +13,6 @@ data_capture_agent = DataCaptureAgent()
 
 logger.info("Chitra.ai app initialized")
 
-
 @app.get("/health")
 async def health():
     return {"status": "ok"}
