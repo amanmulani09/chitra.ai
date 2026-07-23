@@ -1,6 +1,11 @@
 # Agent 2: Analysis and Priority Assessment Agent
 import json
+from typing import Any, Dict
+
+from app.config import logger, openai_client
 from app.models.schemas import CapturedData, AnalysisResult
+
+
 class AnalysisAgent:
     def __init__(self):
         self.name = "AnalysisAgent"

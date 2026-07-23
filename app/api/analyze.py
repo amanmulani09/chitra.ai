@@ -1,13 +1,15 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import HTMLResponse
 
-# FastAPI Endpoints
-
+from app.agents.workflow import process_video_analysis_workflow
+from app.config import logger, templates
+from app.models.schemas import VideoData
 
 router = APIRouter()
 
 @router.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(request, "index.html")
 @router.post("/analyze")
 async def analyze_video_data(data: VideoData):
     """Main endpoint for video data analysis using multi-agent workflow"""

@@ -1,6 +1,7 @@
 from app.agents.data_capture import DataCaptureAgent
 from app.agents.report import ReportAgent
 from app.agents.analysis import AnalysisAgent
+from app.models.schemas import AnalysisReport
 
 # Initialize Agents
 data_capture_agent = DataCaptureAgent()

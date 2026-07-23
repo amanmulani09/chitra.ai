@@ -1,6 +1,7 @@
 fastapi==0.116.1
+uvicorn[standard]==0.35.0
+gunicorn==23.0.0
 openai==1.97.1
 sendgrid==6.12.4
 python-dotenv==1.1.1
-uvicorn==0.35.0
 Jinja2==3.1.6

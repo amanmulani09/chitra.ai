@@ -1,44 +1,21 @@
 from fastapi import FastAPI
-from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
 
-from app.agents.data_capture import DataCaptureAgent
-from app.config import logger
+from app.api import analyze, health
+from app.config import CORS_ORIGINS, logger
 
 app = FastAPI(title="Chitra.ai AI video analysis app", version="0.0.1")
 
-templates = Jinja2Templates(directory="templates")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# Agents
-data_capture_agent = DataCaptureAgent()
+# Routes
+app.include_router(health.router)
+app.include_router(analyze.router)
 
 logger.info("Chitra.ai app initialized")
-
-@app.router("/health")
-async def health_check():
-    """Enhanced health check endpoint"""
-    services_status = {
-        "openai": "configured" if OPENAI_API_KEY else "not configured",
-        "sendgrid": "configured" if SENDGRID_API_KEY else "not configured",
-        "agents": {
-            "data_capture": "active",
-            "analysis": "active",
-            "report": "active"
-        }
-    }
-    # Test OpenAI connection
-    try:
-        if OPENAI_API_KEY:
-            test_response = await openai_client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[{"role": "user", "content": "test"}],
-                max_tokens=1
-            )
-            services_status["openai"] = "connected"
-    except Exception as e:
-        services_status["openai"] = f"error: {str(e)}"
-    return {
-        "status": "healthy",
-        "services": services_status,
-        "workflow": "multi-agent system operational",
-        "version": "2.0.0"
-    }

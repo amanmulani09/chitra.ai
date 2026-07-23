@@ -1,4 +1,13 @@
 # Agent 3: Report Generation and Communication Agent
+from datetime import datetime
+
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
+from app.config import FROM_EMAIL, RECIPIENT_EMAIL, SENDGRID_API_KEY, logger
+from app.models.schemas import AnalysisReport, AnalysisResult, CapturedData
+
+
 class ReportAgent:
     def __init__(self):
         self.name = "ReportAgent"
