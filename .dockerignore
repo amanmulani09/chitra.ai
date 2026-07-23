@@ -10,3 +10,6 @@ README.md
 Dockerfile
 .dockerignore
 docker-compose.yml
+tests/
+.github/
+requirements-dev.txt

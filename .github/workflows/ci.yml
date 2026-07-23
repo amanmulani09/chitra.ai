@@ -1,0 +1,72 @@
+name: CI/CD
+
+# Runs on every push and PR. The build+deploy jobs only run on `main`.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# ghcr.io/<owner>/<repo> — GitHub's built-in container registry.
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+
+jobs:
+  # 1. TEST — always runs. Fast smoke tests gate everything downstream.
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Run tests
+        run: uv run --with-requirements requirements-dev.txt pytest -q
+
+  # 2. BUILD & PUSH — build the image ONCE, tag it with the git commit SHA,
+  #    push to the registry. This single artifact is what every env deploys.
+  build:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write        # allow pushing to ghcr.io
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}   # provided automatically
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          # Two tags: the immutable commit SHA (what we promote) + `latest`.
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+
+  # 3. DEPLOY UAT — automatic. Deploys the exact SHA we just built.
+  deploy-uat:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: uat          # GitHub Environment "uat" holds UAT secrets
+    steps:
+      - name: Deploy image to UAT
+        run: |
+          echo "Deploying ${{ env.IMAGE }}:${{ github.sha }} to UAT"
+          # ── Replace with your host's deploy command, e.g. one of: ──
+          # gcloud run deploy chitra-uat --image ${{ env.IMAGE }}:${{ github.sha }} --region ...
+          # aws ecs update-service --cluster uat --service chitra --force-new-deployment
+          # kubectl set image deployment/chitra app=${{ env.IMAGE }}:${{ github.sha }}
+
+  # 4. DEPLOY PROD — same image, but gated behind manual approval.
+  deploy-prod:
+    needs: deploy-uat
+    runs-on: ubuntu-latest
+    environment: prod         # add a "Required reviewers" rule on this env
+    steps:
+      - name: Deploy image to PROD
+        run: |
+          echo "Promoting ${{ env.IMAGE }}:${{ github.sha }} to PROD"
+          # Same image tag as UAT — guarantees prod runs what UAT tested.
+          # gcloud run deploy chitra-prod --image ${{ env.IMAGE }}:${{ github.sha }} --region ...
